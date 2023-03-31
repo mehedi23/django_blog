@@ -39,7 +39,7 @@ class User(AbstractBaseUser):
         unique=True,
     )
     username = models.CharField(max_length=200, unique=True)
-    image = models.ImageField(upload_to='profile_img/')
+    image = models.ImageField(upload_to='profile_img/', blank=True)
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
     create_at = models.DateTimeField(auto_now_add=True)
