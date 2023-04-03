@@ -12,7 +12,7 @@ class CategorySerializer(serializers.ModelSerializer):
 class BlogSerializer(serializers.ModelSerializer):
     user = UserProfileSerializer(read_only=True)
     category = CategorySerializer(many=True, read_only=True)
-
+    
     class Meta:
         model = Blog
-        fields = ('id', 'user', 'banner', 'tittle', 'description', 'category', 'create_at')   
+        fields = ("__all__" )   

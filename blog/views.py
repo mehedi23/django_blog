@@ -38,26 +38,11 @@ class UserBlogList(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
     
     def post(self, request):
-        # user = request.user
-        # banner = request.FILES['banner']
-        # tittle = request.data['tittle']
-        # description = request.data['description']
-        # category = request.data['category']
+        serializer = BlogSerializer(data=request.data)
         
-        # user_data = {
-        #     'user' : user,
-        #     'banner' : banner,
-        #     'tittle' : tittle,
-        #     'description' : description,
-        #     'category' : category
-        # }
-
-        # serializer = BlogSerializer(data=request.data)
-        print(self.request.user)
-        # if serializer.is_valid():
-        #     blog = serializer.save()
-        #     serializer = BlogSerializer(instance=blog)
-        #     return Response(serializer.data, status=status.HTTP_201_CREATED)
+        if serializer.is_valid():
+            blog = serializer.save()
+            serializer = BlogSerializer(instance=blog)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         
-        # return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        return Response('serializer.errors', status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
