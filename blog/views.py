@@ -10,8 +10,6 @@ from .models.ContentModels import Blog
 
 
 class BlogDetailsView(APIView):
-    permission_classes = [IsAuthenticated]
-
     def get(self, request, blog_id):
         try:
             blog = Blog.objects.get(id=blog_id)
@@ -23,8 +21,43 @@ class BlogDetailsView(APIView):
     
 
 class AllBlogView(APIView):
-    def get(sefl, request):
+    def get(self, request):
         blog = Blog.objects.all()
         serializer = BlogSerializer(blog, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+
+
+class UserBlogList(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        blog = Blog.objects.filter(user = request.user)
+        serializer = BlogSerializer(blog , many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    def post(self, request):
+        # user = request.user
+        # banner = request.FILES['banner']
+        # tittle = request.data['tittle']
+        # description = request.data['description']
+        # category = request.data['category']
+        
+        # user_data = {
+        #     'user' : user,
+        #     'banner' : banner,
+        #     'tittle' : tittle,
+        #     'description' : description,
+        #     'category' : category
+        # }
+
+        # serializer = BlogSerializer(data=request.data)
+        print(self.request.user)
+        # if serializer.is_valid():
+        #     blog = serializer.save()
+        #     serializer = BlogSerializer(instance=blog)
+        #     return Response(serializer.data, status=status.HTTP_201_CREATED)
+        
+        # return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response('serializer.errors', status=status.HTTP_400_BAD_REQUEST)
