@@ -39,9 +39,9 @@ class UserBlogList(APIView):
     
     def post(self, request):
         serializer = BlogSerializer(data=request.data)
-        
-        if serializer.is_valid():
-            blog = serializer.save()
+
+        if serializer.is_valid(raise_exception=True):
+            blog = serializer.save(user_id=self.request.user.id)
             serializer = BlogSerializer(instance=blog)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         

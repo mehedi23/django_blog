@@ -15,4 +15,13 @@ class BlogSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Blog
-        fields = ("__all__" )   
+        fields = ("__all__" )
+
+    # def create(self, validated_data):
+    #     category = validated_data.pop('category')
+    #     blog_instance = Blog.objects.create(**validated_data)
+
+    #     for category_name in category:
+    #         # categorice_obj = Categorice.objects.get(id=category_name['id'])
+
+    #     pass
