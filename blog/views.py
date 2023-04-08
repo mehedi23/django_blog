@@ -6,6 +6,7 @@ from rest_framework.views import APIView
 from .serializers import BlogSerializer
 from rest_framework.permissions import IsAuthenticated
 from .models.ContentModels import Blog
+from .models.Categorice import Categorice
 
 
 
@@ -39,9 +40,18 @@ class UserBlogList(APIView):
     
     def post(self, request):
         serializer = BlogSerializer(data=request.data)
+        category_obj = request.data.get('category')
+
+        if category_obj is None:
+            category_error = {
+                                "category": [
+                                    "This list may not be empty."
+                                ]
+                            }
+            return Response(category_error, status=status.HTTP_400_BAD_REQUEST)
 
         if serializer.is_valid(raise_exception=True):
-            blog = serializer.save(user_id=self.request.user.id)
+            blog = serializer.save(user_id=self.request.user.id, category=request.data['category'])
             serializer = BlogSerializer(instance=blog)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         
