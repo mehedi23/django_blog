@@ -17,7 +17,7 @@ class BlogDetailsView(APIView):
         except Blog.DoesNotExist:
             return Response({'message': 'Blog not found'}, status=status.HTTP_404_NOT_FOUND)
 
-        serializer = BlogSerializer(blog)
+        serializer = BlogSerializer(blog, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
     
 

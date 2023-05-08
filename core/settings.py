@@ -31,7 +31,8 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
 
     'blog',
-    'account'
+    'account',
+    'reactions'
 ]
 
 
