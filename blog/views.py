@@ -58,17 +58,7 @@ class UserBlogList(APIView):
         serializer = BlogSerializer(data=request.data)
 
         if serializer.is_valid(raise_exception=True):
-            blog = serializer.save(user_id=self.request.user.id)
-            category_ids = request.data.get('category', [])
-            
-            for category_id in category_ids:
-                try:
-                    category = Categorice.objects.get(id=category_id)
-                except:
-                    return Response("no category", status=status.HTTP_400_BAD_REQUEST)
-                blog.category.add(category)
-
-            serializer = BlogSerializer(instance=blog)
+            serializer.save(user_id=self.request.user.id)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

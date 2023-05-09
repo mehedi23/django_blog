@@ -2,6 +2,7 @@ from rest_framework import serializers
 from blog.models.ContentModels import Blog
 from account.serializers import UserProfileSerializer
 from reactions.models import Likes
+from blog.models.Categorice import Categorice
 
 
 class BlogSerializer(serializers.ModelSerializer):
@@ -12,7 +13,31 @@ class BlogSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Blog
-        fields = ('id', 'user', 'banner', 'tittle', 'description', 'category', 'create_at', 'blog_likes'  )
+        fields = ('id', 'user', 'banner', 'tittle', 'description', 'category', 'create_at', 'blog_likes' )
+        
+
+    def create(self, validated_data, **kwargs):
+        category_ids = self.initial_data.get('category', [])
+        blog = super().create(validated_data, **kwargs)
+        for category_id in category_ids:
+            try:
+                category = Categorice.objects.get(id=category_id)
+            except Categorice.DoesNotExist:
+                raise serializers.ValidationError(f"Category with ID '{category_id}' does not exist")
+            blog.category.add(category)
+        return blog
+    
+
+    def update(self, instance, validated_data):
+        category_ids = self.initial_data.get('category', [])
+        for category_id in category_ids:
+            try:
+                category = Categorice.objects.get(id=category_id)
+            except Categorice.DoesNotExist:
+                raise serializers.ValidationError(f"Category with ID '{category_id}' does not exist")
+            instance.category.add(category)
+        return super().update(instance, validated_data)
+    
 
     def get_category(self, obj):
         categories = obj.category.all()
