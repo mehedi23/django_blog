@@ -18,8 +18,10 @@ class BlogSerializer(serializers.ModelSerializer):
         categories = obj.category.all()
         return [{'id': category.id, 'name': category.name} for category in categories]
     
+    
     def get_create_at(self, obj):
-        return obj.create_at.date().strftime('%d-%m-%y %X') # time is given 00:00
+        return obj.create_at.strftime('%d-%m-%y %I:%M %p') # time is given 00:00
+    
     
     def get_blog_likes(self, obj):
         likes = {}

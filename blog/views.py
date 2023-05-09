@@ -44,10 +44,16 @@ class UserBlogList(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        blog = Blog.objects.filter(user = request.user)
+        try:
+            blog = Blog.objects.filter(user = request.user, id=request.GET['blog_no'])
+        except:
+            blog = Blog.objects.filter(user = request.user)
+
         serializer = BlogSerializer(blog , many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
+
+
     def post(self, request):
         serializer = BlogSerializer(data=request.data)
 
@@ -66,3 +72,28 @@ class UserBlogList(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+
+    def patch(self, request):
+        try:
+            blog = Blog.objects.filter(user = request.user).get(id=request.GET['blog_no'])
+            serializer = BlogSerializer(blog, data=request.data, partial=True)
+
+            if serializer.is_valid():
+                serializer.save()
+        except:
+            return Response("no blog found", status=status.HTTP_400_BAD_REQUEST)
+
+        return Response("Update success", status=status.HTTP_200_OK)
+    
+
+
+    def delete(self, request):
+        try:
+            blog = Blog.objects.filter(user = request.user).get(id=request.GET['blog_no'])
+            blog.delete()
+        except:
+            return Response("no blog found", status=status.HTTP_400_BAD_REQUEST)
+
+        return Response("delete success", status=status.HTTP_200_OK)
