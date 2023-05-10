@@ -30,12 +30,17 @@ class BlogSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         category_ids = self.initial_data.get('category', [])
+        category_tags = []
+
         for category_id in category_ids:
             try:
                 category = Categorice.objects.get(id=category_id)
+                category_tags.append(category)
             except Categorice.DoesNotExist:
+                category_tags = []
                 raise serializers.ValidationError(f"Category with ID '{category_id}' does not exist")
-            instance.category.add(category)
+            
+            instance.category.set(category_tags)
         return super().update(instance, validated_data)
     
 

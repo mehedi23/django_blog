@@ -1,5 +1,3 @@
-from django.shortcuts import render
-
 from rest_framework.response import Response
 from rest_framework import status, pagination
 from rest_framework.views import APIView
@@ -72,10 +70,10 @@ class UserBlogList(APIView):
 
             if serializer.is_valid():
                 serializer.save()
+            return Response("Update success", status=status.HTTP_200_OK)
         except:
             return Response("no blog found", status=status.HTTP_400_BAD_REQUEST)
 
-        return Response("Update success", status=status.HTTP_200_OK)
     
 
 
@@ -83,7 +81,7 @@ class UserBlogList(APIView):
         try:
             blog = Blog.objects.filter(user = request.user).get(id=request.GET['blog_no'])
             blog.delete()
+            return Response("delete success", status=status.HTTP_200_OK)
         except:
             return Response("no blog found", status=status.HTTP_400_BAD_REQUEST)
 
-        return Response("delete success", status=status.HTTP_200_OK)
