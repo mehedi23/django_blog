@@ -1,8 +1,17 @@
+import base64
 from rest_framework import serializers
 from blog.models.ContentModels import Blog
 from account.serializers import UserProfileSerializer
 from reactions.models import Likes
 from blog.models.Categorice import Categorice
+from django.core.files.base import ContentFile
+
+def base64_file(data, name=None):
+    _format, _img_str = data.split(';base64,')
+    _name, ext = _format.split('/')
+    if not name:
+        name = _name.split(":")[-1]
+    return ContentFile(base64.b64decode(_img_str), name='{}.{}'.format(name, ext))
 
 
 class BlogSerializer(serializers.ModelSerializer):
@@ -18,13 +27,20 @@ class BlogSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data, **kwargs):
         category_ids = self.initial_data.get('category', [])
+        # image = self.initial_data.get('image', '')
+        category_tags = []
+
         blog = super().create(validated_data, **kwargs)
+        
         for category_id in category_ids:
             try:
                 category = Categorice.objects.get(id=category_id)
+                category_tags.append(category)
             except Categorice.DoesNotExist:
+                category_tags = []
                 raise serializers.ValidationError(f"Category with ID '{category_id}' does not exist")
-            blog.category.add(category)
+            
+            blog.category.set(category_tags)
         return blog
     
 

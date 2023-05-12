@@ -4,8 +4,6 @@ from rest_framework.views import APIView
 from .serializers import BlogSerializer
 from rest_framework.permissions import IsAuthenticated
 from .models.ContentModels import Blog
-from .models.Categorice import Categorice
-
 
 
 class BlogDetailsView(APIView):
