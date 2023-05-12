@@ -6,6 +6,7 @@ from reactions.models import Likes
 from blog.models.Categorice import Categorice
 from django.core.files.base import ContentFile
 
+
 def base64_file(data, name=None):
     _format, _img_str = data.split(';base64,')
     _name, ext = _format.split('/')
@@ -27,7 +28,7 @@ class BlogSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data, **kwargs):
         category_ids = self.initial_data.get('category', [])
-        # image = self.initial_data.get('image', '')
+        image_data = self.initial_data.get('banner_image', '')
         category_tags = []
 
         blog = super().create(validated_data, **kwargs)
@@ -41,6 +42,8 @@ class BlogSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError(f"Category with ID '{category_id}' does not exist")
             
             blog.category.set(category_tags)
+
+        blog.banner.save(image_data['image_name'], base64_file(image_data['image_url']), save=True)
         return blog
     
 
