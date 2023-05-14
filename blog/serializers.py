@@ -49,6 +49,7 @@ class BlogSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         category_ids = self.initial_data.get('category', [])
+        image_data = self.initial_data.get('banner_image', '')
         category_tags = []
 
         for category_id in category_ids:
@@ -60,7 +61,13 @@ class BlogSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError(f"Category with ID '{category_id}' does not exist")
             
             instance.category.set(category_tags)
-        return super().update(instance, validated_data)
+        
+        blog = super().update(instance, validated_data)
+        
+        if image_data != '':
+            blog.banner.save(image_data['image_name'], base64_file(image_data['image_url']), save=True)
+
+        return blog
     
 
     def get_category(self, obj):
