@@ -24,9 +24,46 @@ class BlogSerializer(serializers.ModelSerializer):
     class Meta:
         model = Blog
         fields = ('id', 'user', 'banner', 'tittle', 'description', 'category', 'create_at', 'blog_likes' )
+        extra_kwargs = {
+            'tittle': {'required': True},
+            'description': {'required': True},
+        }
+
+    def validate_tittle(self, value):
+        if len(value) == 0:
+            raise serializers.ValidationError("Invalid tittle")
+        return value
+    
+    
+    def validate_description(self, value):
+        print("value 1", value)
+        if len(value) == 0:
+            raise serializers.ValidationError("Invalid description")
+        return value
+    
+
+    def validate(self, attrs):
+        valid_category = self.initial_data.get('category', [])
+        valid_banner_image = self.initial_data.get('banner_image', '')
+
+        if valid_category == []:
+            raise serializers.ValidationError("Invalid category")
         
+        if valid_banner_image == '':
+            raise serializers.ValidationError("Invalid valid_banner_image")
+        
+        if valid_banner_image != '':
+            if not "image_name" in valid_banner_image :
+                raise serializers.ValidationError("Invalid image_name")
+            
+            if not "image_url" in valid_banner_image : 
+                raise serializers.ValidationError("Invalid image_url")
+
+        return attrs
+    
 
     def create(self, validated_data, **kwargs):
+        print("validated_data", validated_data)
         category_ids = self.initial_data.get('category', [])
         image_data = self.initial_data.get('banner_image', '')
         category_tags = []
@@ -68,7 +105,7 @@ class BlogSerializer(serializers.ModelSerializer):
             blog.banner.save(image_data['image_name'], base64_file(image_data['image_url']), save=True)
 
         return blog
-    
+
 
     def get_category(self, obj):
         categories = obj.category.all()
